@@ -1,8 +1,8 @@
-# Wacom Bamboo, Intuos 3 and Cintiq 1st gen macOS driver fix
+# Wacom Bamboo, Graphire 4, Intuos 3, and Cintiq 1st gen macOS driver fix
 
-Wacom's macOS drivers for Bamboo, Intuos 3 and Cintiq 1st gen tablets have bugs in them that cause them to completely fail to start
-on macOS 10.15 Catalina (and likely other versions of macOS). This doesn't apply to the Windows driver, or to the drivers
-for their newer tablets.
+Wacom's macOS drivers for Bamboo, Graphire 4, Intuos 3 and Cintiq 1st gen tablets have bugs in them that cause them to
+completely fail to start on macOS 10.15 Catalina (and likely other versions of macOS). This doesn't apply to the Windows 
+driver, or to the drivers for their newer tablets.
 
 When you try to open the Wacom preference pane with a Bamboo tablet, you'll get an error message saying
 "Waiting for synchronization", then finally "There is a problem with your tablet driver.
@@ -26,6 +26,9 @@ The affected Bamboo driver (v5.3.7-6) supported these tablets:
 - CTT-460 - Bamboo Touch
 - MTE-450 - Bamboo
 
+The affected Graphire 4 driver (v5.3.0-3) supported these tablets:
+- CTE-440, CTE-640 - Graphire 4
+
 And the affected Intuos and Cintiq driver (v6.3.15-3) supported these tablets:
 
 - PTZ-430, PTZ-630, PTZ-630SE, PTZ-631W, PTZ-930, PTZ-1230, PTZ-1231W - Intuos 3
@@ -44,8 +47,9 @@ Thankfully I was able to track down the issues and I have patched the drivers to
 Download the correct installer for your tablet here and double click it to run it, this will install my fixed version of
 Wacom's driver:
 
-- [Download patched v5.3.7-6 installer for Bamboo tablets](https://github.com/thenickdude/wacom-driver-fix/releases/download/patch-5/Install-Wacom-Tablet-5.3.7-6-patched.pkg)
-- [Download patched v6.3.15-13 for Intuos 3 and Cintiq tablets](https://github.com/thenickdude/wacom-driver-fix/releases/download/patch-5/Install-Wacom-Tablet-6.3.15-3-patched.pkg)
+- [Download patched v5.3.0-3 installer for Graphire 4 tablets](https://github.com/thenickdude/wacom-driver-fix/releases/download/patch-6/Install-Wacom-Tablet-5.3.0-3-patched.pkg)
+- [Download patched v5.3.7-6 installer for Bamboo tablets](https://github.com/thenickdude/wacom-driver-fix/releases/download/patch-6/Install-Wacom-Tablet-5.3.7-6-patched.pkg)
+- [Download patched v6.3.15-13 for Intuos 3 and Cintiq tablets](https://github.com/thenickdude/wacom-driver-fix/releases/download/patch-6/Install-Wacom-Tablet-6.3.15-3-patched.pkg)
 
 If you get an error message that your Mac only allows apps to be installed from the App Store, right-click on it and click
 "Open" instead.
@@ -76,7 +80,8 @@ On the "Accessibility" page of Security & Privacy, Find anything related to Waco
 `WacomTabletDriver`, `TabletDriver`,  `ConsumerTouchDriver`, `WacomTabletSpringboard`, `WacomTouchDriver`), select them,
 and click the minus button to remove them. Go to the "Input Monitoring page" and do the same there.
 
-Now either reboot your computer, or run these two commands in the Terminal, to reload the tablet driver. For Bamboo tablets:
+Now either reboot your computer, or run these two commands in the Terminal, to reload the tablet driver. 
+For Bamboo and Graphire 4 tablets:
 
     launchctl unload /Library/LaunchAgents/com.wacom.pentablet.plist
 
@@ -336,3 +341,11 @@ if (settingsVersion < 1 || settingsVersion > 5) {
 So now if the preferences are too new, `MigratePen()` won't attempt to upgrade them, and `ReadSettings()` will cleanly skip 
 loading the preferences. This causes the preferences to remain at their defaults, and if the user edits the settings using 
 the preference pane, the settings should be cleanly overwritten.
+
+### Graphire 4 driver
+
+This driver doesn't have any fatal bugs in it, but its installer was in an older format that is no longer compatible with 
+Catalina, and required significant reworking.
+
+Graphire 4's preference pane relies on symbols that are no longer present in Catalina's standard library 
+(e.g. `_OBJC_IVAR_$_NSControl._tag`), so it can no longer start on Catalina.
